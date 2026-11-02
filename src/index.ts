@@ -3,6 +3,7 @@ import { DpdpPreferences } from "./preferences.js";
 import { DpdpRightsForm } from "./rights-form.js";
 
 export { DpdpConsent, DpdpPreferences, DpdpRightsForm };
+export type { TokenProvider } from "./token.js";
 export { defaultLabels, type Labels, type RequestKind } from "./labels.js";
 
 const TAGS = {

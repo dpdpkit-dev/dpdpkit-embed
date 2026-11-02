@@ -38,7 +38,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "build": "vite build && vite build --mode cdn && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "prepublishOnly": "npm run build"
   },

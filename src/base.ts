@@ -1,6 +1,7 @@
 import { DpdpClient, type Notice } from "@dpdpkit/client";
 import { defaultLabels, type Labels } from "./labels.js";
 import { css } from "./styles.js";
+import { TokenSource, urlTokenProvider, type TokenProvider } from "./token.js";
 
 type Child = Node | string | null | false | undefined;
 
@@ -29,12 +30,28 @@ export const uid = (): string => `dpdp-${++counter}`;
  * not leak in; theme through the `--dpdp-*` custom properties.
  */
 export abstract class DpdpElement extends HTMLElement {
-  static observedAttributes = ["api", "token", "locale", "labels"];
+  static observedAttributes = ["api", "token", "token-url", "locale", "labels"];
 
   protected readonly root: ShadowRoot;
   private clientFor?: { api: string; client: DpdpClient };
   private generation = 0;
   private labelOverrides: Partial<Labels> = {};
+  private customProvider?: TokenProvider;
+  private readonly tokens = new TokenSource(
+    () => this.getAttribute("token"),
+    () => {
+      const url = this.getAttribute("token-url");
+      return this.customProvider ?? (url ? urlTokenProvider(url) : undefined);
+    },
+  );
+
+  /** Function returning a fresh token (or `{ token, expires_at }`); takes precedence over `token-url`. */
+  get tokenProvider(): TokenProvider | undefined {
+    return this.customProvider;
+  }
+  set tokenProvider(value: TokenProvider | undefined) {
+    this.customProvider = value;
+  }
 
   constructor() {
     super();
@@ -58,11 +75,19 @@ export abstract class DpdpElement extends HTMLElement {
     const api = this.getAttribute("api");
     if (!api) throw new Error("dpdp: the api attribute is required");
     if (this.clientFor?.api !== api) {
-      const headers = (): Record<string, string> => {
-        const token = this.getAttribute("token");
+      const headers = async (): Promise<Record<string, string>> => {
+        const token = await this.tokens.get();
         return token ? { Authorization: `Bearer ${token}` } : {};
       };
-      this.clientFor = { api, client: new DpdpClient({ baseUrl: api, headers }) };
+      // A 401 means the token expired or was revoked early: fetch a new one and retry once.
+      const retrying: typeof fetch = async (input, init) => {
+        const response = await fetch(input, init);
+        if (response.status !== 401 || !this.tokens.canRefresh) return response;
+        const token = await this.tokens.get(true);
+        if (!token) return response;
+        return fetch(input, { ...init, headers: { ...(init?.headers as Record<string, string>), Authorization: `Bearer ${token}` } });
+      };
+      this.clientFor = { api, client: new DpdpClient({ baseUrl: api, headers, fetch: retrying }) };
     }
     return this.clientFor.client;
   }
@@ -81,7 +106,7 @@ export abstract class DpdpElement extends HTMLElement {
       }
     }
     // A rotated token needs no reload: it is read on the next request.
-    if (name !== "token" && this.isConnected) void this.refresh();
+    if (name !== "token" && name !== "token-url" && this.isConnected) void this.refresh();
   }
 
   /** Re-fetch and re-render. A newer refresh supersedes an older one still in flight. */
