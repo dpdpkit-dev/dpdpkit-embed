@@ -1,0 +1,56 @@
+{
+  "name": "@dpdpkit/embed",
+  "version": "0.1.0-alpha.1",
+  "description": "Framework-free web components for dpdpkit: <dpdp-consent>, <dpdp-preferences>, <dpdp-rights-form>.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": [
+    "./dist/embed.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/embed.js",
+  "jsdelivr": "./dist/embed.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./embed": "./dist/embed.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpdpkit-dev/dpdpkit-embed.git"
+  },
+  "keywords": [
+    "dpdp",
+    "consent",
+    "privacy",
+    "web-components",
+    "india",
+    "cookie-consent"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@dpdpkit/client": "^0.1.0-alpha.1",
+    "jsdom": "^25.0.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
