@@ -5,6 +5,8 @@ All code packages in the dpdpkit release train share one version number.
 ## Unreleased
 
 ### Added
+- axe-core accessibility tests for all three widgets, a gzip bundle-size budget (`npm run size`, checked in CI)
+  and a tag-triggered release workflow that publishes to npm with provenance.
 - `<dpdp-consent>`, `<dpdp-preferences>` and `<dpdp-rights-form>` web components, with `api`, `token`,
   `locale` and `labels` attributes, `--dpdp-*` theming and dark mode.
 - Signed-token auth: `token-url` attribute and `tokenProvider` property mint end-user tokens from your backend,

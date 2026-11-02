@@ -40,10 +40,12 @@
     "typecheck": "tsc --noEmit",
     "build": "vite build && vite build --mode cdn && tsc -p tsconfig.build.json",
     "test": "vitest run",
+    "size": "node scripts/size.mjs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@dpdpkit/client": "^0.1.0-alpha.1",
+    "axe-core": "^4.14.0",
     "jsdom": "^25.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
