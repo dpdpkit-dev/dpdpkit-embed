@@ -4,6 +4,8 @@ All code packages in the dpdpkit release train share one version number.
 
 ## Unreleased
 
+## 0.1.0-alpha.2 - 2026-11-03
+
 ### Added
 - axe-core accessibility tests for all three widgets, a gzip bundle-size budget (`npm run size`, checked in CI)
   and a tag-triggered release workflow that publishes to npm with provenance.
